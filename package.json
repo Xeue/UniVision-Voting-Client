@@ -1,0 +1,124 @@
+{
+  "name": "vote-client",
+  "homepage": "./",
+  "main": "main.js",
+  "version": "2.2.0",
+  "author": "Sam Chilton",
+  "description": "Electron app for Univision Votes",
+  "dependencies": {
+    "electron-is-dev": "^1.2.0"
+  },
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win",
+    "build:darwin": "electron-builder --mac",
+    "release": "electron-builder --publish always"
+  },
+  "build": {
+    "appId": "vote.client",
+    "productName": "VoteClient",
+    "files": [
+      "**/*",
+      "build/Release/*",
+      "assets/icons/*.*",
+      "assets/icons/mac/*.*",
+      "assets/icons/png/*.*",
+      "assets/icons/win/*.*",
+      "GUI/*.*",
+      "GUI/js/*.*",
+      "GUI/css/*.*"
+    ],
+    "mac": {
+      "category": "public.build.automation",
+      "icon": "assets/icons/mac/icon.ico",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "hardenedRuntime": true,
+      "entitlements": "./build/entitlements.mac.inherit.plist"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 440,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "artifactName": "VoteClient-${version}.${ext}"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable"
+        }
+      ],
+      "icon": "assets/icons/win/icon.ico"
+    },
+    "nsis": {
+      "runAfterFinish": true,
+      "installerIcon": "assets/icons/win/icon.ico",
+      "artifactName": "VoteClient-installer-v${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "VoteClient-v${version}.exe"
+    },
+    "appx": {
+      "applicationId": "vote.client",
+      "backgroundColor": "#464646",
+      "identityName": "vote.client",
+      "publisherDisplayName": "Sam Chilton",
+      "artifactName": "VoteClient-v${version}.${ext}"
+    },
+    "publish": null,
+    "afterSign": "./afterSign.js"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.54",
+    "@electron-forge/maker-deb": "^6.0.0-beta.54",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.54",
+    "@electron-forge/maker-zip": "^6.0.0-beta.54",
+    "electron": "^17.0.0"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "asar": true
+      },
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "client"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  }
+}

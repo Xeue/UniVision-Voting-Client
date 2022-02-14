@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="CasparCG Client for UniVision Voting"/>
+    <link rel="stylesheet" type="text/css" href="./css/mainPage.css">
+    <link rel="stylesheet" type="text/css" href="./css/adminPage.css">
+
+    <title>Univision Voting Client</title>
+    <script type="text/javascript" id="jq_js" src="./js/jq.js"></script>
+    <script type="text/javascript" id="renderer" src="./js/renderer.js"></script>
+    <script type="text/javascript" id="ws_js" src="./js/websocketAPI.js"></script>
+    <script type="text/javascript" id="l3rd_js" src="./js/l3rd.js"></script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <header>
+      <div>Univision Voting Panel</div>
+      <div id="tabsButs">
+        <button id="scoresBut">Scores</button>
+        <button id="scoresAdminBut">Scores Admin</button>
+        <button id="lthirdBut">Lower Thirds</button>
+      </div>
+    </header>
+    <main>
+      <section id="scoresCont" class="mainCont active">
+        <section class="controlCont">
+          <button id="load" class="controlButton">Starloop</button>
+
+          <button id="timerPush" class="controlButton" style="margin-left: 8%;">Push Timer</button>
+          <button id="timerPull" class="controlButton">Pull Timer</button>
+
+          <button id="actsPush" class="controlButton" style="margin-left: 8%;">Push Acts</button>
+          <button id="actsPull" class="controlButton">Pull Acts</button>
+
+          <button id="reset" class="controlButton" style="margin-left: 8%;">Reset</button>
+          <button id="ident" class="controlButton">Ident</button>
+
+        </section>
+
+        <section id="judgeCont">
+        </section>
+
+        <section id="publicCont">
+
+        </section>
+
+        <section id="publicTotCont">
+          <section id="pubTotals" class="pubTotals">
+            <div class="pubTitle"><div>Public totals</div><button class="selectPublic">Select</button></div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Act</th>
+                  <th>Points</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="publicTotalsCont">
+              </tbody>
+            </table>
+          </section>
+          <section id="judgeTotals" class="pubTotals">
+            <div class="pubTitle"><div>Judges totals</div></div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Act</th>
+                  <th>Points</th>
+                </tr>
+              </thead>
+              <tbody id="judgeTotalsCont">
+              </tbody>
+            </table>
+          </section>
+          <section id="overallTotals" class="pubTotals">
+            <div class="pubTitle"><div>Over all totals</div><button id="reorder">Reorder</botton></div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Act</th>
+                  <th>Points</th>
+                </tr>
+              </thead>
+              <tbody id="totalsCont">
+              </tbody>
+            </table>
+          </section>
+        </section>
+
+
+
+      </section>
+
+      <section id="scoresAdminCont" class="mainCont">
+        <div id="vAdmin_bttns">
+          <button id="voteAdmin_early">Early</button>
+          <button id="voteAdmin_open">Open</button>
+          <button id="voteAdmin_close">Close</button>
+          <div id="vAdmin_autoCont">
+            <button id="voteAdmin_reset" class="controlButton">Reset Votes</button>
+            <button id="voteAdmin_editActs" class="controlButton">Edit Acts</button>
+            <button id="vAdmin_autoScroll" class="vote_bttn_active">AutoScroll</button>
+          </div>
+        </div>
+
+        <section id="vAdmin_feed_cont">
+          <table id="vAdmin_feed_table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>University</th>
+                <th>Voted For</th>
+                <th>Verified</th>
+                <th>Vote Counted</th>
+                <th>IP Adress</th>
+                <th>Ban IP</th>
+                <th>Time of Vote</th>
+              </tr>
+            </thead>
+            <tbody id="vAdmin_feed_tbody">
+            </tbody>
+          </table>
+        </section>
+        <section id="voteActs_cont" class="hidden">
+          <div id="voteActs_pop">
+            <table class="adminTable">
+              <thead>
+                <tr>
+                  <th>Uni email extension</th>
+                  <th>Uni Image</th>
+                  <th>Uni Long Name</th>
+                  <th>Uni Short Name</th>
+                  <th>Act Name</th>
+                  <th>Act Image</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody id="voteActs_table">
+              </tbody>
+            </table>
+            <button id="voteActs_new" class="controlButton">Add New</button>
+            <button id="voteActs_save" class="controlButton">Save</button>
+            <button id="voteActs_close" class="controlButton">Close</button>
+          </div>
+        </section>
+      </section>
+
+      <section id="lthirdCont" class="mainCont">
+
+        <button id="lthirdAdd" class="controlButton">Add new</button>
+        <div id="lthirdContainer">
+          <div id="lthirdNormal">
+          </div>
+          <div id="lthirdQuiz">
+            <div class='l3rdCont'>
+              <div class="leftText">Alys</div>
+              <input class='l3rdQLeft' placeholder='%'>
+              <div class="rightText">Joseph</div>
+              <input class='l3rdQRight' placeholder='%'>
+              <button class='l3rdQPush'>PUSH</button>
+              <button class='l3rdPull'>PULL</button>
+            </div>
+            <div class='l3rdCont'>
+              <div class="leftText">Seven Years</div>
+              <input class='l3rdQLeft' placeholder='%'>
+              <div class="rightText">Seven Months</div>
+              <input class='l3rdQRight' placeholder='%'>
+              <button class='l3rdQPush'>PUSH</button>
+              <button class='l3rdPull'>PULL</button>
+            </div>
+            <div class='l3rdCont'>
+              <div class="leftText">Men, by Women</div>
+              <input class='l3rdQLeft' placeholder='%'>
+              <div class="rightText">The Vegas Rats</div>
+              <input class='l3rdQRight' placeholder='%'>
+              <button class='l3rdQPush'>PUSH</button>
+              <button class='l3rdPull'>PULL</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+    <footer>
+      <div id="info"></div>
+      <div id="WSstatus" class="red" title="DISCONNECTED"></div>
+      <div id="status" class="red" title="DISCONNECTED"></div>
+    </footer>
+  </body>
+</html>
