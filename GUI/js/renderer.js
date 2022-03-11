@@ -94,7 +94,8 @@ function renderTotal(totals) {
         }
       }
 
-      let points = 9;
+      let numActs = Object.keys(uni).length;
+      let points = numActs*2-1;
 
       for (var i = sorted.length; i > 0; i--) {
         let rank = sorted[i-1];
