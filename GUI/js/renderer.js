@@ -231,15 +231,17 @@ function renderUI() {
 
       for (var actS in uni) {
         if (uni.hasOwnProperty(actS) && actS !== act) {
+          let opts;
+          let numActs = Object.keys(uni).length;
+          for (let index = 1; index < numActs; index++) {
+            opts = `<option value="${index*2}">${index*2}</option>` + opts;
+          }
+          opts = '<option value="0">Nothing</option>'+opts;
           let $tr = $(`<tr>
             <td>${uni[actS].short}</td>
             <td id="judge${act}Tot${actS}" data-from="${act}" data-act="${actS}">
               <select class="scoreChange">
-                <option value="0">Nothing</option>
-                <option value="8">8</option>
-                <option value="6">6</option>
-                <option value="4">4</option>
-                <option value="2">2</option>
+                ${opts}
               </select>
             </td>
             <td>
