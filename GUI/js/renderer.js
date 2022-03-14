@@ -138,7 +138,7 @@ function sortTables() {
   }
 }
 
-function makeL3rd(index) {
+function makeL3rd(index, l3rd) {
   let $cont = $("#lthirdNormal");
   let $l3Cont = $("<div class='l3rdCont'></div>");
   let $name = $("<input class='l3rdNameIn' placeholder='Name'>");
@@ -156,6 +156,50 @@ function makeL3rd(index) {
   $l3Cont.append($push);
   $l3Cont.append($pull);
   $cont.append($l3Cont);
+}
+
+function buildL3rds(object) {
+  for (let index = 0; index < object.length; index++) {
+    makeL3rd(index, object);
+  }
+}
+
+function loadL3rd() {
+  var file = document.getElementById('lthirdform');
+
+  if(file.files.length) {
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+      buildL3rds(JSON.parse(e.target.result));
+      //document.getElementById('lthirdNormal').innerHTML = e.target.result;
+    };
+
+    reader.readAsBinaryString(file.files[0]);
+  }
+}
+
+function saveL3rd() {
+  let retObj = [];
+  let $rows = $(".l3rdCont");
+  console.log($rows);
+  $rows.each(function() {
+    let obj = {};
+    let name = $(this).find(".l3rdNameIn").val();
+    let role = $(this).find(".l3rdRoleIn").val();
+    if (name !== '') {
+      obj.name = name;
+    }
+    if (role !== '') {
+      obj.role = role;
+    }
+    retObj.push(obj);
+  });
+  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(retObj));
+  var dlAnchorElem = document.getElementById('downloadAnchorElem');
+  dlAnchorElem.setAttribute("href",     dataStr     );
+  dlAnchorElem.setAttribute("download", "lowerThirds.json");
+  dlAnchorElem.click();
 }
 
 function updateTotals() {
@@ -281,11 +325,15 @@ function renderUI() {
 
 $(function() {
 
-  for (var variable in l3rd) {
-    if (l3rd.hasOwnProperty(variable)) {
-      makeL3rd(variable);
-    }
-  }
+  //buildL3rds(l3rd);
+
+  $("#lthirdLoad").click(function() {
+    loadL3rd();
+  });
+
+  $("#lthirdSave").click(function() {
+    saveL3rd();
+  });
 
   $("#load").click(function(){
     let Data = {

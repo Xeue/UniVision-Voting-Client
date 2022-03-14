@@ -183,6 +183,14 @@ main {
 .controlCont {
   margin: 20px;
   margin-right: 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.controlFlex {
+  display: grid;
+  grid-auto-flow: column;
+  column-gap: 10px;
 }
 
 .pubTitle {
@@ -295,6 +303,7 @@ tr.pushed {
 #lthirdQuiz {
   display: table;
   margin: 20px;
+  display: none;
 }
 
 #lthirdQuiz > * {

@@ -12,7 +12,6 @@
     <script type="text/javascript" id="jq_js" src="./js/jq.js"></script>
     <script type="text/javascript" id="renderer" src="./js/renderer.js"></script>
     <script type="text/javascript" id="ws_js" src="./js/websocketAPI.js"></script>
-    <script type="text/javascript" id="l3rd_js" src="./js/l3rd.js"></script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -27,16 +26,25 @@
     <main>
       <section id="scoresCont" class="mainCont active">
         <section class="controlCont">
-          <button id="load" class="controlButton">Starloop</button>
+          <div class="controlFlex">
+            <button id="load" class="controlButton">Starloop</button>
+          </div>
 
-          <button id="timerPush" class="controlButton" style="margin-left: 8%;">Push Timer</button>
-          <button id="timerPull" class="controlButton">Pull Timer</button>
+          <div class="controlFlex">
+            <button id="timerPush" class="controlButton">Push Timer</button>
+            <button id="timerPull" class="controlButton">Pull Timer</button>
+          </div>
 
-          <button id="actsPush" class="controlButton" style="margin-left: 8%;">Push Acts</button>
-          <button id="actsPull" class="controlButton">Pull Acts</button>
+          <div class="controlFlex">
+            <button id="actsPush" class="controlButton">Push Acts</button>
+            <button id="actsPull" class="controlButton">Pull Acts</button>
+          </div>
 
-          <button id="reset" class="controlButton" style="margin-left: 8%;">Reset</button>
-          <button id="ident" class="controlButton">Ident</button>
+          <div class="controlFlex">
+            <button id="reset" class="controlButton">Reset</button>
+            <button id="ident" class="controlButton">Ident</button>
+            <button id="clearAll" class="controlButton">Clear</button>
+          </div>
 
         </section>
 
@@ -150,13 +158,16 @@
       </section>
 
       <section id="lthirdCont" class="mainCont">
-
+        <a id="downloadAnchorElem" style="display:none"></a>
+        <input id="lthirdform" type="file"/>
+        <button id="lthirdLoad" class="controlButton">Load</button>
         <button id="lthirdAdd" class="controlButton">Add new</button>
+        <button id="lthirdSave" class="controlButton">Save</button>
         <div id="lthirdContainer">
           <div id="lthirdNormal">
           </div>
           <div id="lthirdQuiz">
-            <div class='l3rdCont'>
+            <div class='l3rdContOLD'>
               <div class="leftText">Alys</div>
               <input class='l3rdQLeft' placeholder='%'>
               <div class="rightText">Joseph</div>
@@ -164,7 +175,7 @@
               <button class='l3rdQPush'>PUSH</button>
               <button class='l3rdPull'>PULL</button>
             </div>
-            <div class='l3rdCont'>
+            <div class='l3rdContOLD'>
               <div class="leftText">Seven Years</div>
               <input class='l3rdQLeft' placeholder='%'>
               <div class="rightText">Seven Months</div>
@@ -172,7 +183,7 @@
               <button class='l3rdQPush'>PUSH</button>
               <button class='l3rdPull'>PULL</button>
             </div>
-            <div class='l3rdCont'>
+            <div class='l3rdContOLD'>
               <div class="leftText">Men, by Women</div>
               <input class='l3rdQLeft' placeholder='%'>
               <div class="rightText">The Vegas Rats</div>

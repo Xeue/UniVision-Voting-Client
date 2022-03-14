@@ -246,6 +246,8 @@ ipcMain.on('casparCommand', (event, data) => {
     case "clearAll":
       message = `CLEAR 1`;
       sendMessage(message);
+      message = `CLEAR 2`;
+      sendMessage(message);
       break;
     case "pushScore":
       payload = data;
