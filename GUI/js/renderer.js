@@ -369,6 +369,21 @@ $(function() {
     window.api.send('casparCommand', Data);
   });
 
+  $("#creditsPush").click(function(){
+    let Data = {
+      command: "creditsPush",
+      data: $("#creditsTimer").val()
+    };
+    window.api.send('casparCommand', Data);
+  });
+
+  $("#creditsPull").click(function(){
+    let Data = {
+      command: "creditsPull"
+    };
+    window.api.send('casparCommand', Data);
+  });
+
   $("#timerPush").click(function(){
     let Data = {
       command: "timerPush"

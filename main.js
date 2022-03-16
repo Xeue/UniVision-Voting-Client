@@ -191,6 +191,8 @@ ipcMain.on('casparCommand', (event, data) => {
       sendMessage(message);
       break;
     case "load":
+      message = `CLEAR 1`;
+      sendMessage(message);
       payload = {
         duration: 420
       };
@@ -216,7 +218,7 @@ ipcMain.on('casparCommand', (event, data) => {
       message = `CG 1-2 UPDATE 1 "${escapeJSON(payload)}"`;
       sendMessage(message);
       setTimeout(playIdent, 500);
-      setTimeout(clearIdent, 3500);
+      //setTimeout(clearIdent, 3500);
       break;
     case "clear":
       payload = {
@@ -292,6 +294,20 @@ ipcMain.on('casparCommand', (event, data) => {
         state: "stop"
       };
       message = `CG 1-3 UPDATE 1 "${escapeJSON(payload)}"`;
+      sendMessage(message);
+      break;
+    case "creditsPush":
+      payload = {
+        duration: data.data
+      };
+      message = `CG 2-11 ADD 1 "CREDITS_V6/CREDITS" 1 "${escapeJSON(payload)}"`;
+      sendMessage(message);
+      break;
+    case "creditsPull":
+      payload = {
+        state: "stop"
+      };
+      message = `CG 2-11 STOP 1`;
       sendMessage(message);
       break;
     case "timerPush":
