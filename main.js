@@ -173,8 +173,18 @@ function playIdent() {
   sendMessage(`PLAY 2-10 "IDENT" CUT 1 Linear RIGHT`);
 }
 
+function playClip(clip) {
+  let clipName = clip.toUpperCase();
+  sendMessage(`PLAY 2-11 "${clipName}" CUT 1 Linear RIGHT`);
+}
+
 function clearIdent() {
   message = `CLEAR 2-10`;
+  sendMessage(message);
+}
+
+function clearClip() {
+  message = `CLEAR 2-11`;
   sendMessage(message);
 }
 
@@ -244,6 +254,12 @@ ipcMain.on('casparCommand', (event, data) => {
       break;
     case "ident":
       playIdent();
+      break;
+    case "clip":
+      playClip(data.data);
+      break;
+    case "clipClear":
+      clearClip(data.data);
       break;
     case "clearAll":
       message = `CLEAR 1`;

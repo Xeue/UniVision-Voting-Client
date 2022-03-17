@@ -138,6 +138,69 @@ function sortTables() {
   }
 }
 
+function makeIdent(index, ident) {
+  let $cont = $("#identsNormal");
+  let $identCont = $("<div class='identCont'></div>");
+  let $file = $("<input class='identFileIn' placeholder='File name'>");
+  let $push = $("<button class='identPush'>PUSH</button>");
+  let $pull = $("<button class='identPull'>PULL</button>");
+
+  if (typeof index !== "undefined") {
+    $file.val(ident[index].file);
+  }
+
+  $identCont.append($file);
+  $identCont.append($push);
+  $identCont.append($pull);
+  $cont.append($identCont);
+}
+
+function buildIdent(object) {
+  for (let index = 0; index < object.length; index++) {
+    makeIdent(index, object);
+  }
+}
+
+function loadIdent() {
+  var file = document.getElementById('identform');
+
+  if(file.files.length) {
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+      buildIdent(JSON.parse(e.target.result));
+    };
+
+    reader.readAsBinaryString(file.files[0]);
+  }
+}
+
+function saveIdent() {
+  let retObj = [];
+  let $rows = $(".identCont");
+  console.log($rows);
+  $rows.each(function() {
+    let obj = {};
+    let file = $(this).find(".identFileIn").val();
+    if (file !== '') {
+      obj.file = file;
+    }
+    retObj.push(obj);
+  });
+  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(retObj));
+  var dlAnchorElem = document.getElementById('downloadAnchorElemIdent');
+  dlAnchorElem.setAttribute("href",     dataStr     );
+  dlAnchorElem.setAttribute("download", "identsAndClips.json");
+  dlAnchorElem.click();
+}
+
+
+
+
+
+
+
+
 function makeL3rd(index, l3rd) {
   let $cont = $("#lthirdNormal");
   let $l3Cont = $("<div class='l3rdCont'></div>");
@@ -335,6 +398,14 @@ $(function() {
     saveL3rd();
   });
 
+  $("#identLoad").click(function() {
+    loadIdent();
+  });
+
+  $("#identSave").click(function() {
+    saveIdent();
+  });
+
   $("#load").click(function(){
     let Data = {
       command: "load"
@@ -437,6 +508,10 @@ $(function() {
     makeL3rd();
   });
 
+  $("#identAdd").click(function(){
+    makeIdent();
+  });
+
   $("#scoresBut").click(function(){
     $(".mainCont").removeClass("active");
     $("#scoresCont").addClass("active");
@@ -445,6 +520,11 @@ $(function() {
   $("#lthirdBut").click(function(){
     $(".mainCont").removeClass("active");
     $("#lthirdCont").addClass("active");
+  });
+
+  $("#identsBut").click(function(){
+    $(".mainCont").removeClass("active");
+    $("#identsCont").addClass("active");
   });
 
   $("#creditBut").click(function(){
@@ -495,6 +575,19 @@ $(document).on("click", function(e) {
     cmdData.command = "l3rd";
     cmdData.name = name;
     cmdData.role = role;
+    window.api.send('casparCommand', cmdData);
+  } else if ($target.hasClass("identPush")) {
+    let file = $parent.find(".identFileIn").val();
+    $parent.addClass("pushed");
+    console.log(file);
+    let cmdData = {};
+    cmdData.command = "clip";
+    cmdData.data = file;
+    window.api.send('casparCommand', cmdData);
+  } else if ($target.hasClass("identPull")) {
+    let cmdData = {};
+    $(".identCont.pushed").removeClass("pushed");
+    cmdData.command = "clipClear";
     window.api.send('casparCommand', cmdData);
   } else if ($target.hasClass("l3rdPull")) {
     let cmdData = {};
