@@ -238,15 +238,11 @@ button:hover {
   color: #fff;
 }
 
-.pushButJudge,
-.l3rdPush,
-.l3rdQPush {
+.pushButJudge, .l3rdPush, .l3rdQPush, .identPush {
   background-color: #005617;
 }
 
-.pullButJudge,
-.l3rdPull,
-.l3rdQPull {
+.pullButJudge, .l3rdPull, .l3rdQPull, .identPull {
   background-color: #500000;
 }
 
@@ -272,22 +268,22 @@ td:first-of-type {
   text-align: right !important;
 }
 
-#lthirdCont {
+#lthirdCont, #identsCont {
   padding: 20px;
   overflow: scroll;
 }
 
-.l3rdCont {
+.l3rdCont, .identCont {
   padding: 10px;
   padding-left: 5px;
   border-radius: 10px;
 }
 
-.l3rdCont.pushed {
+.l3rdCont.pushed, .identCont.pushed {
   background-color: #008600;
 }
 
-.l3rdCont > * {
+.l3rdCont > *, .identCont > * {
   margin-right: 10px;
   padding: 10px;
 }
@@ -296,7 +292,7 @@ tr.pushed {
   background-color: #005617 !important;
 }
 
-#lthirdContainer {
+#lthirdContainer, #identsContainer {
   display: flex;
 }
 
