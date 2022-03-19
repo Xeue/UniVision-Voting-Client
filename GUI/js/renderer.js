@@ -364,7 +364,7 @@ function renderUI() {
       }
 
       let $tfoot = $(`<tfoot>
-        <td colspan="4"><button id="judge${act}L3rd" class="judgeL3rd" data-uni="${act}">Lower Third</button></td>
+        <td colspan="4"><button id="judge${act}PushRest" class="judgeRest" data-uni="${act}">Push 2,4,6</button><button id="judge${act}L3rd" class="judgeL3rd" data-uni="${act}">Lower Third</button></td>
       </tfoot>`);
 
 
@@ -576,6 +576,18 @@ $(document).on("click", function(e) {
     cmdData.name = name;
     cmdData.role = role;
     window.api.send('casparCommand', cmdData);
+  } else if ($target.hasClass("judgeRest")) {
+    let $cont = $target.closest(".judgeTotals");
+    $cont.find("select").each(function(){
+      let $select = $(this);
+      let value = parseInt($select.val());
+      console.log(value);
+      if (value < 8 ) {
+        setTimeout(function(){
+          $select.closest("tr").find(".pushButJudge").trigger("click");
+        }, 100*value)
+      }
+    });
   } else if ($target.hasClass("identPush")) {
     let file = $parent.find(".identFileIn").val();
     $parent.addClass("pushed");
