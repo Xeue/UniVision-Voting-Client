@@ -312,7 +312,7 @@ ipcMain.on('casparCommand', (event, data) => {
       payload = {
         state: "start"
       };
-      message = `CG 1-3 ADD 1 "UNIVISION/ACTS" 1 "${escapeJSON(payload)}"`;
+      message = `CG 1-3 UPDATE 1 "UNIVISION/ACTS" 1 "${escapeJSON(payload)}"`;
       sendMessage(message);
       break;
     case "actsStart":
