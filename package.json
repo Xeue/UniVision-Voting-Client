@@ -2,7 +2,7 @@
   "name": "vote-client",
   "homepage": "./",
   "main": "main.js",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "author": "Sam Chilton",
   "description": "Electron app for Univision Votes",
   "dependencies": {

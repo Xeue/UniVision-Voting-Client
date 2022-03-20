@@ -364,7 +364,7 @@ function renderUI() {
       }
 
       let $tfoot = $(`<tfoot>
-        <td colspan="4"><button id="judge${act}PushRest" class="judgeRest" data-uni="${act}">Push 2,4,6</button><button id="judge${act}L3rd" class="judgeL3rd" data-uni="${act}">Lower Third</button></td>
+        <td colspan="4"><button id="judge${act}PushRest" class="judgeRest" data-uni="${act}">Push Bottom Scores</button><button id="judge${act}L3rd" class="judgeL3rd" data-uni="${act}">Lower Third</button></td>
       </tfoot>`);
 
 
@@ -422,6 +422,13 @@ $(function() {
   $("#ident").click(function(){
     let Data = {
       command: "ident"
+    };
+    window.api.send('casparCommand', Data);
+  });
+
+  $("#actsStart").click(function(){
+    let Data = {
+      command: "actsStart"
     };
     window.api.send('casparCommand', Data);
   });
@@ -582,7 +589,8 @@ $(document).on("click", function(e) {
       let $select = $(this);
       let value = parseInt($select.val());
       console.log(value);
-      if (value < 8 ) {
+      let numActs = Object.keys(uni).length;
+      if (value < ((numActs * 2) - 7)) {
         setTimeout(function(){
           $select.closest("tr").find(".pushButJudge").trigger("click");
         }, 100*value)
