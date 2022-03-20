@@ -325,6 +325,10 @@ ipcMain.on('casparCommand', (event, data) => {
       };
       message = `CG 1-3 UPDATE 1 "${escapeJSON(payload)}"`;
       sendMessage(message);
+      message = `CG 1-3 STOP 1`;
+      setTimeout(function(){
+        sendMessage(message);
+      },2000);
       break;
     case "creditsPush":
       payload = {
@@ -352,11 +356,6 @@ ipcMain.on('casparCommand', (event, data) => {
         state: "stop"
       };
       message = `CG 1-4 UPDATE 1 "${escapeJSON(payload)}"`;
-      sendMessage(message);
-      message = `CG 1-4 STOP 1`;
-      setTimeout(function(){
-        sendMessage(message);
-      },2000);
       break;
     case "l3rdJudge":
       payload = {
