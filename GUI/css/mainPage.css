@@ -310,6 +310,10 @@ tr.pushed {
   display: table-cell;
 }
 
+.judgeRest {
+  margin-right: 4px;
+}
+
 /* cyrillic-ext */
 @font-face {
   font-family: 'Futura';

@@ -221,6 +221,16 @@ ipcMain.on('casparCommand', (event, data) => {
       setTimeout(playIdent, 500);
 
       break;
+    case "cueJudge":
+      payload = {
+        state: "reset"
+      };
+      message = `CG 1-2 UPDATE 1 "${escapeJSON(payload)}"`;
+      sendMessage(message);
+      setTimeout(function(){
+        playClip("IDENTS/"+data.judge);
+      }, 500);
+      break;
     case "reset":
       payload = {
         state: "reset"
@@ -339,6 +349,10 @@ ipcMain.on('casparCommand', (event, data) => {
       };
       message = `CG 1-4 UPDATE 1 "${escapeJSON(payload)}"`;
       sendMessage(message);
+      message = `CG 1-4 STOP 1`;
+      setTimeout(function(){
+        sendMessage(message);
+      },2000);
       break;
     case "l3rdJudge":
       payload = {

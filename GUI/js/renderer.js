@@ -323,7 +323,7 @@ function renderUI() {
 
 
       let $cont = $(`<section class="judgeTotals"></section>`);
-      let $title = $(`<div class="pubTitle"><div>Votes from ${uni[act].short}</div><button data-judge="${act}" class="selectJudge">Select</button></div>`);
+      let $title = $(`<div class="pubTitle"><div>Votes from ${uni[act].short}</div><button data-judge="${act}" class="cueJudge">Cue</button><button data-judge="${act}" class="selectJudge">Select</button></div>`);
       let $tbl = $("<table></table>");
       let $thead = $(`<thead>
         <tr>
@@ -694,6 +694,14 @@ $(document).on("click", function(e) {
     let judge = $target.data("judge");
     let Data = {
       command: "selectJudge",
+      judge: judge,
+    };
+    window.api.send('casparCommand', Data);
+    console.log(Data);
+  } else if ($target.hasClass("cueJudge")) {
+    let judge = $target.data("judge");
+    let Data = {
+      command: "cueJudge",
       judge: judge,
     };
     window.api.send('casparCommand', Data);
