@@ -1,5 +1,5 @@
 body {
-  background-color: #282c34;
+  background-color: rgb(16, 16, 16);
   font-family: Futura;
   color: #fff;
   font-size: 16pt;
@@ -38,20 +38,18 @@ input, select {
 }
 
 header {
-  background-color: #313742;
-  padding: 4px;
+  background-color: #222222;
+  padding: 5px;
   display: flex;
-  justify-content: space-between;
   font-size: 20pt;
-  position: fixed;
-  top: 0;
-  width: 100%;
+  justify-content: space-between;
+  align-items: center;
 }
 
 footer {
   bottom: 0;
   width: calc(100% - 10px);
-  background-color: #313742;
+  background-color: #222222;
   text-align: right;
   padding: 5px;
   display: flex;
@@ -61,9 +59,8 @@ footer {
 
 input {
   border-radius: 5px;
-  background-color: rgb(71, 73, 94);
-  border: rgb(92, 92, 105) 1px solid;
-  box-shadow: RGB(29, 77, 149) 0px 0px 3px 0px inset;
+  background-color: rgb(0 0 0);
+  border: rgb(54 54 54) 1px solid;
   color: rgb(204, 204, 204);
   padding: 0.2em;
   box-sizing: border-box;
@@ -71,13 +68,12 @@ input {
 }
 
 input:focus {
-  box-shadow: rgb(102, 102, 102) 0px 0px 3px 0px inset, rgb(102, 153, 255) 0px 0px 3px 0px;
+  /* box-shadow: rgb(102, 102, 102) 0px 0px 3px 0px inset, rgb(102, 153, 255) 0px 0px 3px 0px; */
 }
 
 select {
-  background-color: rgb(71, 73, 94);
-  border: rgb(92, 92, 105) 1px solid;
-  box-shadow: RGB(29, 77, 149) 0px 0px 3px 0px inset;
+  background-color: rgb(0 0 0);
+  border: rgb(62 62 62) 1px solid;
   color: rgb(204, 204, 204);
   -webkit-appearance: none;
   background-image: url(../assets/arrow_down.png);
@@ -118,34 +114,32 @@ select {
 }
 
 #tabsButs button {
-  height: 100%;
-  margin: 0;
+  margin-left: 5px;
   border: 0;
-  background-color: #4a4a50;
+  background-color: transparent;
   color: #fff;
   font-size: 12pt;
   padding: 10px;
-  border-left: 2px solid #313742;
   cursor: pointer;
   box-shadow: none;
-  border-radius: 0;
+  border-radius: 6px;
+}
+
+#tabsButs button:hover {
+  background-color: rgb(53, 53, 53);
+}
+
+#tabsButs button.active {
+  background-color: rgb(41, 134, 73);
 }
 
 #tabsButs {
-  height: 100%;
-  position: absolute;
-  right: 0;
-  top: 0;
-  padding: 0;
-  margin: 0;
   display: flex;
 }
 
 main {
-  max-height: calc(100% - 2em);
-  padding-top: 2em;
   overflow: hidden;
-  padding-bottom: 1em;
+  flex: 1;
 }
 
 .mainCont {
@@ -168,16 +162,16 @@ main {
 
 .pubTotals,
 .judgeTotals {
-  background-color: #2f3646;
+  background-color: #1e1e1e;
   margin: 20px;
   border-radius: 10px;
-  border: 1px solid rgb(50, 50, 52);
   text-align: left;
   margin-right: 0px;
   margin-top: 0px;
   min-width: 350px;
   height: min-content;
   overflow: hidden;
+  box-shadow: 0px 2px 8px -5px #ffffff59;
 }
 
 .controlCont {
@@ -200,9 +194,9 @@ main {
 }
 
 button {
-  background-color: rgb(71, 73, 94);
-  border: rgb(92, 92, 105) 1px solid;
-  box-shadow: RGB(29, 77, 149) 0px 0px 3px 0px inset;
+  background-color: rgb(53, 53, 53);
+  border: rgb(92, 92, 105) 0px solid;
+  /* box-shadow: RGB(29, 77, 149) 0px 0px 3px 0px inset; */
   color: rgb(204, 204, 204);
   padding: 0.2em 0.5em;
   box-sizing: border-box;
@@ -231,6 +225,8 @@ th {
 table {
   width: 100%;
   font-size: 11pt;
+  border: none;
+  border-spacing: 0;
 }
 
 button:hover {

@@ -1,10 +1,28 @@
 /*jshint esversion: 6 */
 //const { ipcRenderer } = require('electron');
-var $ = jQuery;
-var autoScroll = 1;
-var pubVotes = {};
-var pubVote = {};
-var runningTotal = {};
+const $ = jQuery;
+let autoScroll = 1;
+const pubVotes = {};
+const runningTotal = {};
+let bans;
+const allVotes = {};
+const judgeVotes = {};
+const judgeVotesPushed = {};
+
+let webConnection;
+
+function getUni(PK) {
+	for (let index = 0; index < uni.length; index++) {
+		if (uni[index].PK == PK) return uni[index]
+	}
+	return {
+		"name": "undefined",
+		"short": "undefined",
+		"act": "undefined",
+		"email": "undefined",
+		"order": "undefined"
+	}
+}
 
 function createRows(votesObj) {
   for (var i = 0; i < votesObj.length; i++) {
@@ -28,8 +46,8 @@ function createRows(votesObj) {
     $tr.data('dateVote', vote.dateVote);
 
     $email = $('<td>'+vote.email+'</td>');
-    $uni = $('<td>'+uni[vote.fromUni].name+'</td>');
-    $act = $('<td>'+uni[vote.act].act+'</td>');
+    $uni = $('<td>'+getUni(vote.fromUni).name+'</td>');
+    $act = $('<td>'+getUni(vote.act).act+'</td>');
     $verify = $('<td></td>');
     if (vote.verified == "1") {
       $verify.html("Yes");
@@ -72,11 +90,9 @@ function createRows(votesObj) {
 }
 
 function renderTotal(totals) {
-  for (var act in uni) {
-    if (uni.hasOwnProperty(act)) {
-      pubVotes[act] = 0;
-    }
-  }
+  uni.forEach(act => {
+    pubVotes[act.PK] = 0;
+  });
   for (var variable in totals) {
     if (totals.hasOwnProperty(variable)) {
       let tots = totals[variable];
@@ -113,14 +129,12 @@ function renderTotal(totals) {
 }
 
 function renderTotals(totals) {
-  for (var act in uni) {
-    if (uni.hasOwnProperty(act)) {
-      $("#pubTot"+act).html(pubVotes[act]);
-      $(`#allTot${act}`).html(allVotes[act]+pubVotes[act])
-      $("#pubVot"+act).html(parseInt(totals[act]));
-      $("#pubTot"+act).parent().data("points", pubVotes[act]);
-    }
-  }
+  uni.forEach(act => {
+    $("#pubTot"+act.PK).html(pubVotes[act.PK]);
+    $(`#allTot${act.PK}`).html(allVotes[act.PK]+pubVotes[act.PK])
+    $("#pubVot"+act.PK).html(parseInt(totals[act.PK]));
+    $("#pubTot"+act.PK).parent().data("points", pubVotes[act.PK]);
+  });
   sortTables();
 }
 
@@ -266,55 +280,57 @@ function saveL3rd() {
 }
 
 function updateTotals() {
-  for (var act in uni) {
-    if (uni.hasOwnProperty(act)) {
-      $(`#judgeTot${act}`).html(allVotes[act]);
-      $(`#allTot${act}`).html(allVotes[act]+pubVotes[act]);
-      conn.send(`{"type":"voteJudge","act":${act},"points":${allVotes[act]}}`);
-    }
-  }
+  uni.forEach(act => {
+    $(`#judgeTot${act.PK}`).html(allVotes[act.PK]);
+    $(`#allTot${act.PK}`).html(allVotes[act.PK]+pubVotes[act.PK]);
+    if (allVotes[act.PK] > 0) webConnection.send({"type":"voteJudge","act":act.PK,"points":allVotes[act.PK]});
+  })
 }
 
 function renderUI() {
-  let payload = {
+  const oldFormat = {};
+  uni.forEach(act => {
+    oldFormat[act.PK] = act;
+  });
+
+  window.api.send('casparCommand', {
     command: "unis",
-    data: uni
-  };
-  window.api.send('casparCommand', payload);
+    data: oldFormat
+  });
+
   $("#totalsCont").html("");
   $("#judgeTotalsCont").html("");
   $("#publicTotalsCont").html("");
   $("#voteActs_table").html("");
   $("#judgeCont").html("");
-  for (var act in uni) {
-    if (uni.hasOwnProperty(act)) {
+  uni.forEach(act => {
 
-      pubVotes[act] = 0;
-      allVotes[act] = 0;
-      judgeVotes[act] = 0;
-      judgeVotesPushed[act] = 0;
+      pubVotes[act.PK] = 0;
+      allVotes[act.PK] = 0;
+      judgeVotes[act.PK] = 0;
+      judgeVotesPushed[act.PK] = 0;
 
-      conn.send(`{"type":"voteJudge","act":${act},"points":${allVotes[act]}}`);
+      webConnection.send({"type":"voteJudge","act":act.PK,"points":allVotes[act.PK]});
 
       let $tr = $("<tr></tr>");
-      let $allName = $(`<td>${uni[act].short}  -  ${uni[act].act}</td>`);
-      let $allTot = $(`<td id="allTot${act}"></td>`);
+      let $allName = $(`<td>${act.short}  -  ${act.act}</td>`);
+      let $allTot = $(`<td id="allTot${act.PK}"></td>`);
       $tr.append($allName);
       $tr.append($allTot);
       $("#totalsCont").append($tr);
 
       let $jtr = $("<tr></tr>");
-      let $jallName = $(`<td>${uni[act].short}  -  ${uni[act].act}</td>`);
-      let $jallTot = $(`<td id="judgeTot${act}"></td>`);
+      let $jallName = $(`<td>${act.short}  -  ${act.act}</td>`);
+      let $jallTot = $(`<td id="judgeTot${act.PK}"></td>`);
       $jtr.append($jallName);
       $jtr.append($jallTot);
       $("#judgeTotalsCont").append($jtr);
 
       let $ptr = $("<tr></tr>");
-      let $pallName = $(`<td>${uni[act].short}</td>`);
-      let $pallTot = $(`<td id="pubTot${act}"></td>`);
-      let $pPush = $(`<td><button class="pushButPub" data-act="${act}">PUSH</button></td>`);
-      let $pPull = $(`<td><button class="pullButPub" data-act="${act}">PULL</button></td>`);
+      let $pallName = $(`<td>${act.short}</td>`);
+      let $pallTot = $(`<td id="pubTot${act.PK}"></td>`);
+      let $pPush = $(`<td><button class="pushButPub" data-act="${act.PK}">PUSH</button></td>`);
+      let $pPull = $(`<td><button class="pullButPub" data-act="${act.PK}">PULL</button></td>`);
       $ptr.append($pallName);
       $ptr.append($pallTot);
       $ptr.append($pPush);
@@ -323,7 +339,7 @@ function renderUI() {
 
 
       let $cont = $(`<section class="judgeTotals"></section>`);
-      let $title = $(`<div class="pubTitle"><div>Votes from ${uni[act].short}</div><button data-judge="${act}" class="cueJudge">Cue</button><button data-judge="${act}" class="selectJudge">Select</button></div>`);
+      let $title = $(`<div class="pubTitle"><div>Votes from ${act.short}</div><button data-judge="${act.PK}" class="cueJudge">Cue</button><button data-judge="${act.PK}" class="selectJudge">Select</button></div>`);
       let $tbl = $("<table></table>");
       let $thead = $(`<thead>
         <tr>
@@ -337,8 +353,7 @@ function renderUI() {
       $cont.append($title);
       $tbl.append($thead);
 
-      for (var actS in uni) {
-        if (uni.hasOwnProperty(actS) && actS !== act) {
+      uni.forEach(actS => {
           let opts;
           let numActs = Object.keys(uni).length;
           for (let index = 1; index < numActs; index++) {
@@ -346,25 +361,24 @@ function renderUI() {
           }
           opts = '<option value="0">Nothing</option>'+opts;
           let $tr = $(`<tr>
-            <td>${uni[actS].short}</td>
-            <td id="judge${act}Tot${actS}" data-from="${act}" data-act="${actS}">
+            <td>${actS.short}</td>
+            <td id="judge${act.PK}Tot${actS.PK}" data-from="${act.PK}" data-act="${actS.PK}">
               <select class="scoreChange">
                 ${opts}
               </select>
             </td>
             <td>
-              <button class="pushButJudge" data-from="${act}" data-act="${actS}">PUSH</button>
+              <button class="pushButJudge" data-from="${act.PK}" data-act="${actS.PK}">PUSH</button>
             </td>
             <td>
-              <button class="pullButJudge" data-from="${act}" data-act="${actS}">PULL</button>
+              <button class="pullButJudge" data-from="${act.PK}" data-act="${actS.PK}">PULL</button>
             </td>
           </tr>`);
          $tbody.append($tr);
-        }
-      }
+      })
 
       let $tfoot = $(`<tfoot>
-        <td colspan="4"><button id="judge${act}PushRest" class="judgeRest" data-uni="${act}">Push Bottom Scores</button><button id="judge${act}L3rd" class="judgeL3rd" data-uni="${act}">Lower Third</button></td>
+        <td colspan="4"><button id="judge${act.PK}PushRest" class="judgeRest" data-uni="${act.PK}">Push Bottom Scores</button><button id="judge${act.PK}L3rd" class="judgeL3rd" data-uni="${act.PK}">Lower Third</button></td>
       </tfoot>`);
 
 
@@ -373,22 +387,75 @@ function renderUI() {
       $cont.append($tbl);
       $("#judgeCont").append($cont);
 
-      let $row = $(`<tr data-pk="${act}"></tr>`);
-      for (var prop in uni[act]) {
-        if (uni[act].hasOwnProperty(prop)) {
-          let $tr = $(`<td><input class="voteActs_input" data-prop="${prop}" value="${uni[act][prop]}"></td>`);
+      let $row = $(`<tr data-pk="${act.PK}"></tr>`);
+      for (var prop in act) {
+        if (act.hasOwnProperty(prop)) {
+          let $tr;
+					if (prop == 'order') {
+						$tr = $(`<td class="voteActs_cont">
+							<button class="voteActs_move" data-direction="up" type="button">🡅</button>
+							<input data-prop="${prop}" type="text" class="voteActs_place" readonly value="${act[prop]}">
+							<button class="voteActs_move" data-direction="down" type="button">🡇</button>
+						</td>`);
+					} else if (prop != 'PK') {
+						$tr = $(`<td><input class="voteActs_input" data-prop="${prop}" value="${act[prop]}"></td>`);
+					}
           $row.append($tr);
         }
       }
-      $row.append($(`<td><button type='button' class='voteActs_delete' data-pk='${act}'>Delete</button></td>`));
+      $row.append($(`<td><button type='button' class='voteActs_delete' data-pk='${act.PK}'>Delete</button></td>`));
       $("#voteActs_table").append($row);
+    });
+}
+
+function socketDoMessage(header, data) {
+  if (data.type == "voteMeta") {
+    createRows(data.votes);
+  } else if (data.type == "voteBans") {
+    bans = data.IPs;
+  } else if (data.type == "voteStatus") {
+    if (data.status == "OPEN") {
+      $('#voteAdmin_open').addClass('vote_bttn_active');
+      $('#voteAdmin_open').siblings().removeClass("vote_bttn_active");
+    } else if (data.status == "CLOSED") {
+      $('#voteAdmin_close').addClass('vote_bttn_active');
+      $('#voteAdmin_close').siblings().removeClass("vote_bttn_active");
+    } else {
+      $('#voteAdmin_early').addClass('vote_bttn_active');
+      $('#voteAdmin_early').siblings().removeClass("vote_bttn_active");
     }
+  } else if (data.type == "voteActs") {
+    uni = data.data;
+    renderUI();
+  } else if (data.type == "ping") {
+    webConnection.send({"type":"pong"});
+  } else if (data.type == "voteTotal") {
+    runningTotal[data.PK] = data.total;
+    renderTotal(runningTotal);
+  } else if (data.type == "voteTotals") {
+    renderTotals(data.totals);
+  } else if (data.type == "adminReset") {
+    $("#vAdmin_feed_tbody").html("");
   }
 }
 
 $(function() {
 
-  //buildL3rds(l3rd);
+  webConnection = new webSocket('vote.univision.show', 'Browser', '3.2.1', true);
+	webConnection.addEventListener('message', event => {
+		const [header, payload] = event.detail;
+		socketDoMessage(header, payload);
+	});
+	webConnection.addEventListener('open', () => {
+    $("#WSstatus").attr("class","green");
+    $("#WSstatus").attr("title", "CONNECTED");
+    webConnection.send({"type":"voteAdmin","command":"getMeta"});
+	});
+	webConnection.addEventListener('close', () => {
+    $("#WSstatus").attr("class","red");
+    $("#WSstatus").attr("title", "DISCONNECTED");
+	});
+
 
   $("#lthirdLoad").click(function() {
     loadL3rd();
@@ -746,21 +813,21 @@ $(document).on("click", function(e) {
     wsMsg.type = "voteAdmin";
     wsMsg.command = "status";
     wsMsg.status = "OPEN";
-    conn.send(JSON.stringify(wsMsg));
+    webConnection.send(wsMsg);
     $target.blur();
   } else if ($target.is("#voteAdmin_close")) {
     let wsMsg = {};
     wsMsg.type = "voteAdmin";
     wsMsg.command = "status";
     wsMsg.status = "CLOSED";
-    conn.send(JSON.stringify(wsMsg));
+    webConnection.send(wsMsg);
     $target.blur();
   } else if ($target.is("#voteAdmin_early")) {
     let wsMsg = {};
     wsMsg.type = "voteAdmin";
     wsMsg.command = "status";
     wsMsg.status = "EARLY";
-    conn.send(JSON.stringify(wsMsg));
+    webConnection.send(wsMsg);
     $target.blur();
   } else if ($target.is("#voteAdmin_editActs") || $target.is("#voteActs_close")) {
     $("#voteActs_cont").toggleClass("hidden");
@@ -782,18 +849,18 @@ $(document).on("click", function(e) {
     wsMsg.type = "voteEdit";
     wsMsg.command = "save";
     wsMsg.data = data;
-    conn.send(JSON.stringify(wsMsg));
+    webConnection.send(wsMsg);
   } else if ($target.is("#voteActs_new")) {
     let wsMsg = {};
     wsMsg.type = "voteEdit";
     wsMsg.command = "new";
-    conn.send(JSON.stringify(wsMsg));
+    webConnection.send(wsMsg);
   } else if ($target.is("#voteAdmin_reset")) {
     if (confirm('This will delete ALL votes, this cannot be undone...')) {
       let wsMsg = {};
       wsMsg.type = "voteAdmin";
       wsMsg.command = "reset";
-      conn.send(JSON.stringify(wsMsg));
+      webConnection.send(wsMsg);
     }
   } else if ($target.hasClass("voteActs_delete")) {
     if (confirm('Deleting a University cannot be undone and will remove ALL votes that come from this uni or are for this uni')) {
@@ -801,38 +868,66 @@ $(document).on("click", function(e) {
       wsMsg.type = "voteEdit";
       wsMsg.command = "delete";
       wsMsg.PK = $target.data("pk");
-      conn.send(JSON.stringify(wsMsg));
+      webConnection.send(wsMsg);
     }
   } else if ($target.hasClass('vAdmin_ban_no')) {
     let IP = $target.parent().data('IP');
-    conn.send('{"type":"voteAdmin","command":"banIP","IP":"'+IP+'"}');
+    webConnection.send({"type":"voteAdmin","command":"banIP","IP":IP});
   } else if ($target.hasClass('vAdmin_ban_yes')) {
     let IP = $target.parent().data('IP');
-    conn.send('{"type":"voteAdmin","command":"unBanIP","IP":"'+IP+'"}');
+    webConnection.send({"type":"voteAdmin","command":"unBanIP","IP":IP});
   } else if ($target.hasClass('vAdmin_enabled_no')) {
     let PK = $target.parent().attr('id').replace("voteMeta_", "");
-    conn.send('{"type":"voteAdmin","command":"include","PK":"'+PK+'"}');
+    webConnection.send({"type":"voteAdmin","command":"include","PK":PK});
   } else if ($target.hasClass('vAdmin_enabled_yes')) {
     let PK = $target.parent().attr('id').replace("voteMeta_", "");
-    conn.send('{"type":"voteAdmin","command":"exclude","PK":"'+PK+'"}');
+    webConnection.send({"type":"voteAdmin","command":"exclude","PK":PK});
   } else if ($target.hasClass('vAdmin_verify_yes')) {
     let PK = $target.parent().attr('id').replace("voteMeta_", "");
     let email = $target.parent().data('email');
     let act = $target.parent().data('act');
     let IP = $target.parent().data('IP');
     let dateVote = $target.parent().data('dateVote');
-    conn.send('{"type":"voteAdmin","command":"unVerify","PK":"'+PK+'","email":"'+email+'","act":"'+act+'","IP":"'+IP+'","dateVote":"'+dateVote+'"}');
+    webConnection.send({"type":"voteAdmin","command":"unVerify","PK":PK,"email":email,"act":act,"IP":IP,"dateVote":dateVote});
   } else if ($target.hasClass('vAdmin_verify_no')) {
     let PK = $target.parent().attr('id').replace("voteMeta_", "");
     let email = $target.parent().data('email');
     let act = $target.parent().data('act');
     let IP = $target.parent().data('IP');
     let dateVote = $target.parent().data('dateVote');
-    conn.send('{"type":"voteAdmin","command":"verify","PK":"'+PK+'","email":"'+email+'","act":"'+act+'","IP":"'+IP+'","dateVote":"'+dateVote+'"}');
+    webConnection.send({"type":"voteAdmin","command":"verify","PK":PK,"email":email,"act":act,"IP":IP,"dateVote":dateVote});
   } else if ($target.is('#vAdmin_autoScroll')) {
     $target.toggleClass("vote_bttn_active");
     autoScroll = $target.hasClass("vote_bttn_active");
     $target.blur();
+  } else if ($target.hasClass("voteActs_move")) {
+    const $place = $($target.siblings('.voteActs_place')[0]);
+    const $row = $target.closest('tr');
+    $place.parent().addClass('voteActs_changed');
+    $row.addClass('voteActs_changed_row');
+    const count = $('#voteActs_table').children().length;
+    const place = Number($place.val());
+    if ($target.data('direction') == 'up') {
+      if (place > 1) {
+        $place.val(place-1);
+        $row.prev().addClass('voteActs_changed_row');
+        const $prevPlace = $row.prev().find('.voteActs_place');
+        $prevPlace.parent().addClass('voteActs_changed');
+        const prevVal = Number($prevPlace.val());
+        $prevPlace.val(prevVal+1)
+        $row.prev().before($row);
+      }
+    } else {
+      if (place < count) {
+        $place.val(place+1);
+        $row.next().addClass('voteActs_changed_row');
+        const $nextPlace = $row.next().find('.voteActs_place');
+        $nextPlace.parent().addClass('voteActs_changed');
+        const nextVal = Number($nextPlace.val());
+        $nextPlace.val(nextVal-1)
+        $row.next().after($row);
+      }
+    }
   }
 });
 
