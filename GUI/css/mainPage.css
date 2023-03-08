@@ -96,6 +96,10 @@ select {
   margin-left: 7px;
 }
 
+#WSstatus {
+  margin-right: 7px;
+}
+
 #info {
   flex: 1;
   text-align: left;
@@ -166,7 +170,6 @@ main {
   margin: 20px;
   border-radius: 10px;
   text-align: left;
-  margin-right: 0px;
   margin-top: 0px;
   min-width: 350px;
   height: min-content;
@@ -234,11 +237,19 @@ button:hover {
   color: #fff;
 }
 
-.pushButJudge, .l3rdPush, .l3rdQPush, .identPush {
+.pushButJudge,
+.l3rdPush,
+.judgePush,
+.l3rdQPush,
+.identPush {
   background-color: #005617;
 }
 
-.pullButJudge, .l3rdPull, .l3rdQPull, .identPull {
+.pullButJudge,
+.l3rdPull,
+.judgePull,
+.l3rdQPull,
+.identPull {
   background-color: #500000;
 }
 
@@ -266,20 +277,30 @@ td:first-of-type {
 
 #lthirdCont, #identsCont {
   padding: 20px;
-  overflow: scroll;
+  overflow: auto;
 }
 
-.l3rdCont, .identCont {
+.judgeCont {
+  text-align: right;
+}
+
+.l3rdCont,
+.judgeCont,
+.identCont {
   padding: 10px;
-  padding-left: 5px;
+  padding-left: 0;
   border-radius: 10px;
 }
 
-.l3rdCont.pushed, .identCont.pushed {
+.l3rdCont.pushed,
+.judgeCont.pushed,
+.identCont.pushed {
   background-color: #008600;
 }
 
-.l3rdCont > *, .identCont > * {
+.l3rdCont > *,
+.judgeCont > *,
+.identCont > * {
   margin-right: 10px;
   padding: 10px;
 }
@@ -290,21 +311,16 @@ tr.pushed {
 
 #lthirdContainer, #identsContainer {
   display: flex;
+  justify-content: space-between;
+  padding-top: 10px;
 }
 
-#lthirdQuiz {
-  display: table;
-  margin: 20px;
-  display: none;
-}
-
-#lthirdQuiz > * {
-  display: table-row;
-}
-
-#lthirdQuiz > * > * {
-  display: table-cell;
-}
+#lthirdJudgeName
+ {
+    float: right;
+    font-size: 150%;
+    padding-right: 230px;
+} 
 
 .judgeRest {
   margin-right: 4px;

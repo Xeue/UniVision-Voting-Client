@@ -2,11 +2,11 @@
   "name": "vote-client",
   "homepage": "./",
   "main": "main.js",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "author": "Sam Chilton",
   "description": "Electron app for Univision Votes",
   "dependencies": {
-    "electron-is-dev": "^1.2.0"
+    "xeue-logs": "^1.7.4"
   },
   "scripts": {
     "start": "electron .",

@@ -8,6 +8,7 @@ let bans;
 const allVotes = {};
 const judgeVotes = {};
 const judgeVotesPushed = {};
+let judgeNames;
 
 let webConnection;
 
@@ -169,9 +170,9 @@ function makeIdent(index, ident) {
   $cont.append($identCont);
 }
 
-function buildIdent(object) {
-  for (let index = 0; index < object.length; index++) {
-    makeIdent(index, object);
+function buildIdent(array) {
+  for (let index = 0; index < array.length; index++) {
+    makeIdent(index, array);
   }
 }
 
@@ -192,7 +193,6 @@ function loadIdent() {
 function saveIdent() {
   let retObj = [];
   let $rows = $(".identCont");
-  console.log($rows);
   $rows.each(function() {
     let obj = {};
     let file = $(this).find(".identFileIn").val();
@@ -201,18 +201,13 @@ function saveIdent() {
     }
     retObj.push(obj);
   });
-  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(retObj));
+  window.api.send('identSave', retObj);
+  /*var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(retObj));
   var dlAnchorElem = document.getElementById('downloadAnchorElemIdent');
   dlAnchorElem.setAttribute("href",     dataStr     );
   dlAnchorElem.setAttribute("download", "identsAndClips.json");
-  dlAnchorElem.click();
+  dlAnchorElem.click();*/
 }
-
-
-
-
-
-
 
 
 function makeL3rd(index, l3rd) {
@@ -235,9 +230,9 @@ function makeL3rd(index, l3rd) {
   $cont.append($l3Cont);
 }
 
-function buildL3rds(object) {
-  for (let index = 0; index < object.length; index++) {
-    makeL3rd(index, object);
+function buildL3rds(array) {
+  for (let index = 0; index < array.length; index++) {
+    makeL3rd(index, array);
   }
 }
 
@@ -259,7 +254,6 @@ function loadL3rd() {
 function saveL3rd() {
   let retObj = [];
   let $rows = $(".l3rdCont");
-  console.log($rows);
   $rows.each(function() {
     let obj = {};
     let name = $(this).find(".l3rdNameIn").val();
@@ -272,11 +266,30 @@ function saveL3rd() {
     }
     retObj.push(obj);
   });
-  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(retObj));
+
+  window.api.send('l3rdSave', retObj);
+  /*var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(retObj));
   var dlAnchorElem = document.getElementById('downloadAnchorElem');
   dlAnchorElem.setAttribute("href",     dataStr     );
   dlAnchorElem.setAttribute("download", "lowerThirds.json");
-  dlAnchorElem.click();
+  dlAnchorElem.click();*/
+}
+
+function saveJudge() {
+  let retObj = [];
+  let $rows = $(".judgeCont");
+  $rows.each(function() {
+    let name = $(this).find(".judgeNameIn").val();
+    let PK = Number($(this).data("pk"));
+    retObj[PK] = name;
+  });
+  judgeNames = retObj;
+  window.api.send('judgeSave', retObj);
+  /*var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(retObj));
+  var dlAnchorElem = document.getElementById('downloadAnchorElem');
+  dlAnchorElem.setAttribute("href",     dataStr     );
+  dlAnchorElem.setAttribute("download", "lowerThirds.json");
+  dlAnchorElem.click();*/
 }
 
 function updateTotals() {
@@ -298,6 +311,7 @@ function renderUI() {
     data: oldFormat
   });
 
+  const $judgeCont = $("#lthirdJudge");
   $("#totalsCont").html("");
   $("#judgeTotalsCont").html("");
   $("#publicTotalsCont").html("");
@@ -305,107 +319,124 @@ function renderUI() {
   $("#judgeCont").html("");
   uni.forEach(act => {
 
-      pubVotes[act.PK] = 0;
-      allVotes[act.PK] = 0;
-      judgeVotes[act.PK] = 0;
-      judgeVotesPushed[act.PK] = 0;
+    pubVotes[act.PK] = 0;
+    allVotes[act.PK] = 0;
+    judgeVotes[act.PK] = 0;
+    judgeVotesPushed[act.PK] = 0;
 
-      webConnection.send({"type":"voteJudge","act":act.PK,"points":allVotes[act.PK]});
+    webConnection.send({"type":"voteJudge","act":act.PK,"points":allVotes[act.PK]});
 
-      let $tr = $("<tr></tr>");
-      let $allName = $(`<td>${act.short}  -  ${act.act}</td>`);
-      let $allTot = $(`<td id="allTot${act.PK}"></td>`);
-      $tr.append($allName);
-      $tr.append($allTot);
-      $("#totalsCont").append($tr);
+    let $tr = $("<tr></tr>");
+    let $allName = $(`<td>${act.short}  -  ${act.act}</td>`);
+    let $allTot = $(`<td id="allTot${act.PK}"></td>`);
+    $tr.append($allName);
+    $tr.append($allTot);
+    $("#totalsCont").append($tr);
 
-      let $jtr = $("<tr></tr>");
-      let $jallName = $(`<td>${act.short}  -  ${act.act}</td>`);
-      let $jallTot = $(`<td id="judgeTot${act.PK}"></td>`);
-      $jtr.append($jallName);
-      $jtr.append($jallTot);
-      $("#judgeTotalsCont").append($jtr);
+    let $jtr = $("<tr></tr>");
+    let $jallName = $(`<td>${act.short}  -  ${act.act}</td>`);
+    let $jallTot = $(`<td id="judgeTot${act.PK}"></td>`);
+    $jtr.append($jallName);
+    $jtr.append($jallTot);
+    $("#judgeTotalsCont").append($jtr);
 
-      let $ptr = $("<tr></tr>");
-      let $pallName = $(`<td>${act.short}</td>`);
-      let $pallTot = $(`<td id="pubTot${act.PK}"></td>`);
-      let $pPush = $(`<td><button class="pushButPub" data-act="${act.PK}">PUSH</button></td>`);
-      let $pPull = $(`<td><button class="pullButPub" data-act="${act.PK}">PULL</button></td>`);
-      $ptr.append($pallName);
-      $ptr.append($pallTot);
-      $ptr.append($pPush);
-      $ptr.append($pPull);
-      $("#publicTotalsCont").append($ptr);
-
-
-      let $cont = $(`<section class="judgeTotals"></section>`);
-      let $title = $(`<div class="pubTitle"><div>Votes from ${act.short}</div><button data-judge="${act.PK}" class="cueJudge">Cue</button><button data-judge="${act.PK}" class="selectJudge">Select</button></div>`);
-      let $tbl = $("<table></table>");
-      let $thead = $(`<thead>
-        <tr>
-          <th>Act</th>
-          <th>Points</th>
-          <th></th>
-          <th></th>
-        </tr>
-      </thead>`);
-      let $tbody = $("<tbody></tbody>");
-      $cont.append($title);
-      $tbl.append($thead);
-
-      uni.forEach(actS => {
-          let opts;
-          let numActs = Object.keys(uni).length;
-          for (let index = 1; index < numActs; index++) {
-            opts = `<option value="${index*2}">${index*2}</option>` + opts;
-          }
-          opts = '<option value="0">Nothing</option>'+opts;
-          let $tr = $(`<tr>
-            <td>${actS.short}</td>
-            <td id="judge${act.PK}Tot${actS.PK}" data-from="${act.PK}" data-act="${actS.PK}">
-              <select class="scoreChange">
-                ${opts}
-              </select>
-            </td>
-            <td>
-              <button class="pushButJudge" data-from="${act.PK}" data-act="${actS.PK}">PUSH</button>
-            </td>
-            <td>
-              <button class="pullButJudge" data-from="${act.PK}" data-act="${actS.PK}">PULL</button>
-            </td>
-          </tr>`);
-         $tbody.append($tr);
-      })
-
-      let $tfoot = $(`<tfoot>
-        <td colspan="4"><button id="judge${act.PK}PushRest" class="judgeRest" data-uni="${act.PK}">Push Bottom Scores</button><button id="judge${act.PK}L3rd" class="judgeL3rd" data-uni="${act.PK}">Lower Third</button></td>
-      </tfoot>`);
+    let $ptr = $("<tr></tr>");
+    let $pallName = $(`<td>${act.short}</td>`);
+    let $pallTot = $(`<td id="pubTot${act.PK}"></td>`);
+    let $pPush = $(`<td><button class="pushButPub" data-act="${act.PK}">PUSH</button></td>`);
+    let $pPull = $(`<td><button class="pullButPub" data-act="${act.PK}">PULL</button></td>`);
+    $ptr.append($pallName);
+    $ptr.append($pallTot);
+    $ptr.append($pPush);
+    $ptr.append($pPull);
+    $("#publicTotalsCont").append($ptr);
 
 
-      $tbl.append($tbody);
-      $tbl.append($tfoot);
-      $cont.append($tbl);
-      $("#judgeCont").append($cont);
+    let $cont = $(`<section class="judgeTotals"></section>`);
+    let $title = $(`<div class="pubTitle">
+      <div>Votes from ${act.short}</div>
+      <button data-judge="${act.order}" class="cueJudge">Ident</button>
+      <button data-judge="${act.PK}" class="selectJudge">Push</button>
+    </div>`);
+    let $tbl = $("<table></table>");
+    let $thead = $(`<thead>
+      <tr>
+        <th>Act</th>
+        <th>Points</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>`);
+    let $tbody = $("<tbody></tbody>");
+    $cont.append($title);
+    $tbl.append($thead);
 
-      let $row = $(`<tr data-pk="${act.PK}"></tr>`);
-      for (var prop in act) {
-        if (act.hasOwnProperty(prop)) {
-          let $tr;
-					if (prop == 'order') {
-						$tr = $(`<td class="voteActs_cont">
-							<button class="voteActs_move" data-direction="up" type="button">🡅</button>
-							<input data-prop="${prop}" type="text" class="voteActs_place" readonly value="${act[prop]}">
-							<button class="voteActs_move" data-direction="down" type="button">🡇</button>
-						</td>`);
-					} else if (prop != 'PK') {
-						$tr = $(`<td><input class="voteActs_input" data-prop="${prop}" value="${act[prop]}"></td>`);
-					}
-          $row.append($tr);
+    uni.forEach(actS => {
+        let opts;
+        let numActs = Object.keys(uni).length;
+        for (let index = 1; index < numActs; index++) {
+          opts = `<option value="${index*2}">${index*2}</option>` + opts;
         }
+        opts = '<option value="0">Nothing</option>'+opts;
+        let $tr = $(`<tr>
+          <td>${actS.short}</td>
+          <td id="judge${act.PK}Tot${actS.PK}" data-from="${act.PK}" data-act="${actS.PK}">
+            <select class="scoreChange">
+              ${opts}
+            </select>
+          </td>
+          <td>
+            <button class="pushButJudge" data-from="${act.PK}" data-act="${actS.PK}">PUSH</button>
+          </td>
+          <td>
+            <button class="pullButJudge" data-from="${act.PK}" data-act="${actS.PK}">PULL</button>
+          </td>
+        </tr>`);
+        $tbody.append($tr);
+    })
+
+    let $tfoot = $(`<tfoot>
+      <td colspan="4">
+        <button id="judge${act.PK}PushRest" class="judgeRest" data-uni="${act.PK}">Push Bottom Scores</button>
+        <button id="judge${act.PK}L3rd" class="judgeL3rd" data-uni="${act.PK}">Lower Third</button>
+      </td>
+    </tfoot>`);
+
+
+    $tbl.append($tbody);
+    $tbl.append($tfoot);
+    $cont.append($tbl);
+    $("#judgeCont").append($cont);
+
+    let $row = $(`<tr data-pk="${act.PK}"></tr>`);
+    for (var prop in act) {
+      if (act.hasOwnProperty(prop)) {
+        let $tr;
+        if (prop == 'order') {
+          $tr = $(`<td class="voteActs_cont">
+            <button class="voteActs_move" data-direction="up" type="button">🡅</button>
+            <input data-prop="${prop}" type="text" class="voteActs_place" readonly value="${act[prop]}">
+            <button class="voteActs_move" data-direction="down" type="button">🡇</button>
+          </td>`);
+        } else if (prop != 'PK') {
+          $tr = $(`<td><input class="voteActs_input" data-prop="${prop}" value="${act[prop]}"></td>`);
+        }
+        $row.append($tr);
       }
-      $row.append($(`<td><button type='button' class='voteActs_delete' data-pk='${act.PK}'>Delete</button></td>`));
-      $("#voteActs_table").append($row);
-    });
+    }
+    $row.append($(`<td><button type='button' class='voteActs_delete' data-pk='${act.PK}'>Delete</button></td>`));
+    $("#voteActs_table").append($row);
+
+    const value = typeof judgeNames[act.PK] === "undefined" ? "" : `value="${judgeNames[act.PK]}"`;
+    console.log(value);
+    $judgeCont.append(`<div class="judgeCont" data-PK="${act.PK}" data-order="${act.order}">
+      <span>${act.name}</span>
+      <input class="judgeNameIn" placeholder="Name" ${value}>
+      <button class="judgePush">PUSH</button>
+      <button class="judgePull">PULL</button>
+    </div>`)
+
+  });
 }
 
 function socketDoMessage(header, data) {
@@ -493,18 +524,9 @@ $(function() {
     window.api.send('casparCommand', Data);
   });
 
-  $("#actsStart").click(function(){
-    let Data = {
-      command: "actsStart"
-    };
-    window.api.send('casparCommand', Data);
-  });
-
   $("#actsPush").click(function(){
-    let Data = {
-      command: "actsPush"
-    };
-    window.api.send('casparCommand', Data);
+    window.api.send('casparCommand', {command: "actsStart"});
+    window.api.send('casparCommand', {command: "actsPush"});
   });
 
   $("#actsPull").click(function(){
@@ -516,8 +538,7 @@ $(function() {
 
   $("#creditsPush").click(function(){
     let Data = {
-      command: "creditsPush",
-      data: $("#creditsTimer").val()
+      command: "creditsPush"
     };
     window.api.send('casparCommand', Data);
   });
@@ -633,6 +654,12 @@ $(document).on("change", function(e) {
   } else if ($target.hasClass("voteActs_input")) {
     $target.parent().addClass("voteActs_changed");
     $target.parent().parent().addClass("voteActs_changed_row");
+  } else if ($target.hasClass("l3rdRoleIn") || $target.hasClass("l3rdNameIn")) {
+    saveL3rd();
+  } else if ($target.hasClass("identFileIn")) {
+    saveIdent();
+  } else if ($target.hasClass("judgeNameIn")) {
+    saveJudge();
   }
 });
 
@@ -643,8 +670,6 @@ $(document).on("click", function(e) {
     let name = $parent.find(".l3rdNameIn").val();
     let role = $parent.find(".l3rdRoleIn").val();
     $parent.addClass("pushed");
-    console.log(name);
-    console.log(role);
     let cmdData = {};
     cmdData.command = "l3rd";
     cmdData.name = name;
@@ -682,12 +707,30 @@ $(document).on("click", function(e) {
     cmdData.command = "l3rdPull";
     window.api.send('casparCommand', cmdData);
   } else if ($target.hasClass("judgeL3rd")) {
-    let Data = {
-      command: "l3rdJudge",
-      judge: $target.data("uni")
-    };
-    window.api.send('casparCommand', Data);
-    console.log(Data);
+    const PK = Number($target.data("uni"));
+    const name = document.querySelector(`.judgeCont[data-pk="${PK}"] > .judgeNameIn`).value;
+    window.api.send('casparCommand', {
+      "command": "l3rd",
+      "name": name,
+      "role": getUni(PK).name
+    });
+    setTimeout(() => {
+      window.api.send('casparCommand', {"command":"l3rdPull"});
+    }, 8000);
+  } else if ($target.hasClass("judgePush")) {
+    const $parent = $target.parent();
+    const PK = Number($parent.data("pk"));
+    $parent.addClass("pushed");
+    const name = $parent.find(".judgeNameIn").val();
+    window.api.send('casparCommand', {
+      "command": "l3rd",
+      "name": name,
+      "role": getUni(PK).name
+    });
+  } else if ($target.hasClass("judgePull")) {
+    const $parent = $target.parent();
+    $parent.removeClass("pushed");
+    window.api.send('casparCommand', {"command":"l3rdPull"});
   } else if ($target.hasClass("pushButPub")) {
     let pushed = $target.parent().parent().data("pushed");
     if (pushed !== true) {
@@ -695,13 +738,11 @@ $(document).on("click", function(e) {
       $target.parent().parent().data("pushed", true);
       $target.parent().parent().addClass("pushed");
       updateTotals();
-      let Data = {
+      window.api.send('casparCommand', {
         command: "pushScore",
         act: act,
         score: pubVotes[act]+allVotes[act]
-      };
-      window.api.send('casparCommand', Data);
-      console.log(Data);
+      });
     }
   } else if ($target.hasClass("pushButJudge")) {
     let pushed = $target.parent().parent().data("pushed");
@@ -966,3 +1007,15 @@ window.api.receive('casparMeta', (data) => {
   }
   console.log(data);
 });
+
+window.api.receive('l3rdLoad', (data) => {
+  buildL3rds(data);
+})
+
+window.api.receive('identLoad', (data) => {
+  buildIdent(data);
+})
+
+window.api.receive('judgeLoad', (data) => {
+  judgeNames = data;
+})
