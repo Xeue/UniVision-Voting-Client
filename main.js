@@ -346,12 +346,13 @@ ipcMain.on('judgeSave', (event, data) => {
 
 
 async function saveObject(object, fileName) {
-  await fs.promises.writeFile(fileName+".json", JSON.stringify(object));
+  console.log();
+  await fs.promises.writeFile(`${app.getPath("userData")}/${fileName}.json`, JSON.stringify(object));
 }
 
 async function getObject(fileName) {
   try {
-    const buffer = await fs.promises.readFile(fileName+".json");
+    const buffer = await fs.promises.readFile(`${app.getPath("userData")}/${fileName}.json`);
     return JSON.parse(buffer.toString());
   } catch (error) {
     logs.warn("No file data found for: "+fileName);
