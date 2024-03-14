@@ -23,7 +23,7 @@ For the value to be shown in the GFX the PUSH button must be pressed. Any pushed
 When a value is PUSHed the rows will auto sort and animate.
 When the public totals come in they will update in real time in the client.
 The public totals can be pushed firstly by selecting the section, same as the judges, then PUSHing each uni. These will not auto sort.
-There is a "Reorder" button in the "Over all totals" section, this has a bug that pressing it more than once will put rows on top of each other. ONLY press this once. It will also break if there order is currently correct...
+There is a "Reorder" button in the "Over all totals" section, this has a bug that pressing it more than once will put rows on top of each other. ONLY press this once. It will also break if their order is currently correct...
 
 The Scores Admin tab is the same as the one from the website, in there you can see all incoming votes, can verify and uncount votes and ban IPs via the Ban coloumn.
 
@@ -37,9 +37,6 @@ The Electron window connects to the websocket server and the nodeJS backend conn
 There is then a communication layer via IPC between the front end and the backend.
 So when a button is pressed from the client, it triggers an IPC message to the backend which then parses the data and turns it into caspar command that is sent to caspar.
 
-The lower thirds are currently all saved in a js file in /GUI/js/l3rd.js and cannot be edited once the program is compiled.
-There is a WIP fix for this that will change this to be an external file.
-
 ## How to edit and then build the code
 
 Download the source files as a zip, or use git clone.
@@ -52,5 +49,6 @@ Run "npm install electron-builder"
 Now you should be able to type "electron ." and a the terminal will show the logs and the client will open.
 If you make changes and want to build it, I would recomend going to the package.json file and changing the version number section at the top.
 To run the build, run "npm run build"
+I would recomend changing the version number in the package.json file if you are going to run a build.
 It may show an error about electron builder, if so, open the package.json file. Find the "dependencies" section and delete the row that has "electron-builder". Make sure the last entry in the block doesn't have a comma after.
-It will spend a while building and will create two new .exe in the "dist" folder. You want the one with the captial Vote. The other will install it as a program rather than just running.
+It will spend a while building and will create a new .exe in the "dist" folder.
