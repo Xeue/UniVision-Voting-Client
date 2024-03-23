@@ -181,8 +181,8 @@ function playIdent() {
   sendMessage(`PLAY 2-10 "IDENT" CUT 1 Linear RIGHT`);
 }
 
-function playClip(clip) {
-  sendMessage(`PLAY 2-11 "${clip.toUpperCase()}" CUT 1 Linear RIGHT`);
+function playClip(clip, layer = 2) {
+  sendMessage(`PLAY ${layer}-11 "${clip.toUpperCase()}" CUT 1 Linear RIGHT`);
 }
 
 
